@@ -557,17 +557,24 @@
     }
   }
 
-  async function loadHorarios(operador, mes) {
+  function loadHorarios(operador, mes) {
     document.getElementById("cal-loading").style.display = "block";
+    document.getElementById("cal-loading").textContent = "Cargando horarios...";
     document.getElementById("cal-container").style.display = "none";
 
-    try {
-      const url = `${SCRIPT_URL}?operador=${encodeURIComponent(operador)}&mes=${encodeURIComponent(mes)}`;
-      const res = await fetch(url);
-      const data = await res.json();
+    // Remove previous JSONP script if exists
+    const old = document.getElementById("jsonp-script");
+    if (old) old.remove();
+
+    const callbackName = "calCallback_" + Date.now();
+    const url = `${SCRIPT_URL}?operador=${encodeURIComponent(operador)}&mes=${encodeURIComponent(mes)}&callback=${callbackName}`;
+
+    window[callbackName] = function(data) {
+      delete window[callbackName];
+      document.getElementById("jsonp-script").remove();
 
       if (data.error) {
-        document.getElementById("cal-loading").textContent = "No se encontraron datos para este operador.";
+        document.getElementById("cal-loading").textContent = "No se encontraron datos: " + data.error;
         return;
       }
 
@@ -577,10 +584,15 @@
       document.getElementById("cal-container").style.display = "block";
       document.getElementById("cal-detail").innerHTML = '<div class="cal-detail-empty">Tocá una fecha para ver tu turno</div>';
       renderCalendar();
+    };
 
-    } catch(err) {
+    const script = document.createElement("script");
+    script.id = "jsonp-script";
+    script.src = url;
+    script.onerror = function() {
       document.getElementById("cal-loading").textContent = "Error al cargar los horarios. Intentá de nuevo.";
-    }
+    };
+    document.body.appendChild(script);
   }
 
   document.getElementById("cal-operador").addEventListener("change", function() {
