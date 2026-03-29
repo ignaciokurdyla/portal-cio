@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portal CIO Operators</title>
+<link rel="icon" type="image/png" href="favicon.png">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
@@ -42,11 +43,7 @@
     line-height: 1.2;
     margin-bottom: 8px;
   }
-  .portal-header p {
-    font-size: 0.875rem;
-    color: #7a92ab;
-    line-height: 1.5;
-  }
+  .portal-header p { font-size: 0.875rem; color: #7a92ab; line-height: 1.5; }
 
   .section { padding: 20px 16px 4px; }
   .section-label {
@@ -96,8 +93,148 @@
 
   .divider { margin: 8px 16px 0; border: none; border-top: 1px solid rgba(255,255,255,0.06); }
 
-  .form-wrap { padding: 20px 16px 8px; }
+  /* CALENDARIO */
+  .cal-wrap { padding: 20px 16px 4px; }
 
+  .cal-select {
+    width: 100%;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    background: rgba(255,255,255,0.05);
+    color: #dce9f5;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a7a9a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+    cursor: pointer;
+  }
+  .cal-select option { background: #0d2040; color: #dce9f5; }
+  .cal-select:focus { border-color: rgba(26,107,189,0.5); background-color: rgba(26,107,189,0.07); }
+
+  .cal-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .cal-nav-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #dce9f5;
+    border-radius: 8px;
+    width: 36px; height: 36px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .cal-nav-btn:hover { background: rgba(26,107,189,0.2); }
+  .cal-nav-title { font-size: 0.95rem; font-weight: 700; color: #dce9f5; }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+  .cal-day-header {
+    text-align: center;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #5a7a9a;
+    padding: 4px 0;
+  }
+  .cal-day {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+    position: relative;
+    background: rgba(255,255,255,0.03);
+    color: #7a92ab;
+  }
+  .cal-day.empty { background: transparent; border: none; cursor: default; }
+  .cal-day.has-shift {
+    background: rgba(26,107,189,0.15);
+    border-color: rgba(26,107,189,0.3);
+    color: #dce9f5;
+  }
+  .cal-day.day-off {
+    background: rgba(255,255,255,0.02);
+    color: #3a5a7a;
+    font-size: 0.65rem;
+  }
+  .cal-day.today {
+    border-color: #1a6bbd;
+    color: #6aabf7;
+    font-weight: 700;
+  }
+  .cal-day.selected {
+    background: #1a6bbd;
+    border-color: #1a6bbd;
+    color: #fff;
+  }
+  .cal-day .dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: #6aabf7;
+    margin-top: 2px;
+  }
+  .cal-day-num { font-size: 0.82rem; line-height: 1; }
+  .cal-day-off-label { font-size: 0.5rem; color: #3a5a7a; margin-top: 1px; }
+
+  .cal-detail {
+    margin-top: 12px;
+    padding: 14px;
+    background: rgba(26,107,189,0.1);
+    border: 1px solid rgba(26,107,189,0.25);
+    border-radius: 12px;
+    min-height: 60px;
+  }
+  .cal-detail-date {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #5a7a9a;
+    margin-bottom: 6px;
+  }
+  .cal-detail-turno {
+    font-size: 0.95rem;
+    color: #dce9f5;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .cal-detail-empty {
+    font-size: 0.85rem;
+    color: #5a7a9a;
+    font-style: italic;
+  }
+  .cal-loading {
+    text-align: center;
+    color: #5a7a9a;
+    font-size: 0.85rem;
+    padding: 20px 0;
+  }
+
+  /* FORM */
+  .form-wrap { padding: 20px 16px 8px; }
   .field-label {
     display: block;
     font-size: 0.75rem;
@@ -136,58 +273,29 @@
   }
   select option { background: #0d2040; color: #dce9f5; }
   textarea { min-height: 90px; resize: none; display: block; }
-  select:focus, textarea:focus, input:focus {
-    border-color: rgba(26,107,189,0.5);
-    background: rgba(26,107,189,0.07);
-  }
+  select:focus, textarea:focus, input:focus { border-color: rgba(26,107,189,0.5); background: rgba(26,107,189,0.07); }
 
-  .field-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .field-row .field-group { display: flex; flex-direction: column; }
 
   .submit-btn {
-    display: block;
-    width: 100%;
-    padding: 16px;
-    margin-top: 18px;
-    background: #1a6bbd;
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    font-size: 1rem;
-    font-weight: 600;
-    text-align: center;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    transition: background 0.15s;
+    display: block; width: 100%; padding: 16px; margin-top: 18px;
+    background: #1a6bbd; color: #fff; border: none; border-radius: 12px;
+    font-size: 1rem; font-weight: 600; text-align: center; cursor: pointer;
+    -webkit-tap-highlight-color: transparent; transition: background 0.15s;
   }
   .submit-btn:hover { background: #155fa0; }
   .submit-btn:disabled { opacity: 0.7; pointer-events: none; }
 
   .info-note {
-    margin-top: 12px;
-    padding: 12px 14px;
-    background: rgba(26,107,189,0.1);
-    border: 1px solid rgba(26,107,189,0.2);
-    border-radius: 10px;
-    font-size: 0.78rem;
-    color: #6aabf7;
-    line-height: 1.5;
-    text-align: center;
+    margin-top: 12px; padding: 12px 14px;
+    background: rgba(26,107,189,0.1); border: 1px solid rgba(26,107,189,0.2);
+    border-radius: 10px; font-size: 0.78rem; color: #6aabf7; line-height: 1.5; text-align: center;
   }
   .success-note {
-    margin-top: 12px;
-    padding: 12px 14px;
-    background: rgba(26,122,74,0.2);
-    border: 1px solid rgba(26,122,74,0.4);
-    border-radius: 10px;
-    font-size: 0.9rem;
-    color: #4ecf8a;
-    line-height: 1.5;
-    text-align: center;
+    margin-top: 12px; padding: 12px 14px;
+    background: rgba(26,122,74,0.2); border: 1px solid rgba(26,122,74,0.4);
+    border-radius: 10px; font-size: 0.9rem; color: #4ecf8a; line-height: 1.5; text-align: center;
     display: none;
   }
 </style>
@@ -201,6 +309,77 @@
     <p>Acceso rápido a tus herramientas de trabajo</p>
   </div>
 
+  <!-- CALENDARIO -->
+  <div class="cal-wrap">
+    <div class="section-label">Mi Horario</div>
+
+    <select class="cal-select" id="cal-operador">
+      <option value="" disabled selected>Seleccioná tu nombre</option>
+      <option>Angeles Beltrami</option>
+      <option>Valentin Ferre</option>
+      <option>Theo Damasco</option>
+      <option>Morena Kalifon</option>
+      <option>Josefina Badano</option>
+      <option>Mateo Gauna Testa</option>
+      <option>Micaela Zanello</option>
+      <option>Joaquin Navarro Merlo</option>
+      <option>Milagros Iturriza</option>
+      <option>Melisa Pascua</option>
+      <option>Agustin Lopez</option>
+      <option>Santiago Martinez</option>
+      <option>Santino Paleari</option>
+      <option>Santiago Bravo</option>
+      <option>Lara Garcia</option>
+      <option>Belen Lemonnier</option>
+      <option>Matias Passalacqua</option>
+      <option>Manuel Candi Tormos</option>
+      <option>Gino Danna</option>
+      <option>Juan Agustin Pereyra</option>
+      <option>Lucila Pereyra</option>
+      <option>Jazmin Condori</option>
+      <option>Macarena Iglesias</option>
+      <option>Malena Winnick</option>
+      <option>Tomas Oppenheimer</option>
+      <option>Lucia Pinto</option>
+      <option>Delfina Ezcurra</option>
+      <option>Belen Panelati</option>
+      <option>Constanza Guazzoni</option>
+      <option>Josefina Boada</option>
+      <option>Josefina Courreges</option>
+      <option>Federico Conti</option>
+      <option>Victoria Parodi</option>
+      <option>Ignacio Kurdyla</option>
+      <option>Lucas Florio</option>
+      <option>Ramiro Tersano</option>
+      <option>Sofia Dimasi</option>
+      <option>Agustina Garcia Bonini</option>
+      <option>Sebastian Schaller</option>
+      <option>Felipe De La Rosa</option>
+      <option>Daniela Ruano</option>
+      <option>Ever Mereles</option>
+      <option>Baltasar Andrada</option>
+      <option>Katalina Melendez</option>
+      <option>Nikos Simosis</option>
+    </select>
+
+    <div id="cal-container" style="display:none;">
+      <div class="cal-nav">
+        <button class="cal-nav-btn" id="cal-prev">‹</button>
+        <span class="cal-nav-title" id="cal-title"></span>
+        <button class="cal-nav-btn" id="cal-next">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="cal-detail" id="cal-detail">
+        <div class="cal-detail-empty">Tocá una fecha para ver tu turno</div>
+      </div>
+    </div>
+
+    <div id="cal-loading" class="cal-loading" style="display:none;">Cargando horarios...</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SHEETS -->
   <div class="section">
     <div class="section-label">Hojas de Cálculo</div>
     <a class="link-btn" href="https://docs.google.com/spreadsheets/d/1136e7fCuvsTUF3f9HDwz-QIOVM71cyebwOX0A0pbWCo/edit?usp=sharing" target="_blank">
@@ -223,8 +402,7 @@
     </a>
   </div>
 
-  <hr class="divider">
-
+  <!-- SOLICITUDES -->
   <div class="form-wrap">
     <div class="section-label">Solicitudes</div>
 
@@ -259,7 +437,6 @@
     <div class="info-note">
       Tu solicitud quedará registrada automáticamente en la hoja de solicitudes.
     </div>
-
     <div class="success-note" id="success-msg">
       ✓ Solicitud enviada correctamente.
     </div>
@@ -270,6 +447,164 @@
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8dBwnWtmAgzAfSqel44q4e5aUSnRP_V1mBBtp22lFzXHSSlAoytZQABDKgYHiLs8/exec";
 
+  const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+  const MESES_SHEET = ["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
+  const DIAS = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+
+  let calData = null;
+  let calMes = new Date().getMonth();
+  let calAnio = new Date().getFullYear();
+  let selectedDay = null;
+
+  function parseFecha(fechaStr) {
+    // formato "6.4" = día 6, mes 4
+    const parts = fechaStr.toString().trim().split(".");
+    if (parts.length === 2) {
+      return { dia: parseInt(parts[0]), mes: parseInt(parts[1]) };
+    }
+    return null;
+  }
+
+  function renderCalendar() {
+    if (!calData) return;
+
+    document.getElementById("cal-title").textContent = `${MESES[calMes]} ${calAnio}`;
+
+    const grid = document.getElementById("cal-grid");
+    grid.innerHTML = "";
+
+    // Headers
+    DIAS.forEach(d => {
+      const h = document.createElement("div");
+      h.className = "cal-day-header";
+      h.textContent = d;
+      grid.appendChild(h);
+    });
+
+    const firstDay = new Date(calAnio, calMes, 1).getDay();
+    const daysInMonth = new Date(calAnio, calMes + 1, 0).getDate();
+    const today = new Date();
+
+    // Empty cells
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement("div");
+      empty.className = "cal-day empty";
+      grid.appendChild(empty);
+    }
+
+    // Day cells
+    for (let d = 1; d <= daysInMonth; d++) {
+      const cell = document.createElement("div");
+      const isToday = d === today.getDate() && calMes === today.getMonth() && calAnio === today.getFullYear();
+
+      // Find turno for this day
+      const turnoEntry = calData.turnos.find(t => {
+        const f = parseFecha(t.fecha);
+        return f && f.dia === d && f.mes === (calMes + 1);
+      });
+
+      const turno = turnoEntry ? turnoEntry.turno : null;
+      const isDayOff = turno && (turno.toLowerCase().includes("day off") || turno.toLowerCase().includes("vacaciones") || turno.toLowerCase().includes("compensatorio"));
+
+      cell.className = "cal-day";
+      if (isToday) cell.classList.add("today");
+      if (turno && !isDayOff) cell.classList.add("has-shift");
+      if (isDayOff) cell.classList.add("day-off");
+      if (selectedDay === d) cell.classList.add("selected");
+
+      const num = document.createElement("div");
+      num.className = "cal-day-num";
+      num.textContent = d;
+      cell.appendChild(num);
+
+      if (turno && !isDayOff) {
+        const dot = document.createElement("div");
+        dot.className = "dot";
+        cell.appendChild(dot);
+      }
+      if (isDayOff) {
+        const lbl = document.createElement("div");
+        lbl.className = "cal-day-off-label";
+        lbl.textContent = turno.toLowerCase().includes("vacaciones") ? "vac" : "off";
+        cell.appendChild(lbl);
+      }
+
+      cell.addEventListener("click", () => {
+        selectedDay = d;
+        renderCalendar();
+        showDetail(d, turno, turnoEntry);
+      });
+
+      grid.appendChild(cell);
+    }
+  }
+
+  function showDetail(dia, turno, entry) {
+    const detail = document.getElementById("cal-detail");
+    const diaSemana = entry ? entry.diaSemana : "";
+    const fechaLabel = `${diaSemana} ${dia} de ${MESES[calMes]}`;
+
+    if (!turno) {
+      detail.innerHTML = `<div class="cal-detail-date">${fechaLabel}</div><div class="cal-detail-empty">Sin turno asignado</div>`;
+    } else if (turno.toLowerCase().includes("day off")) {
+      detail.innerHTML = `<div class="cal-detail-date">${fechaLabel}</div><div class="cal-detail-turno">🟡 Day Off</div>`;
+    } else if (turno.toLowerCase().includes("vacaciones")) {
+      detail.innerHTML = `<div class="cal-detail-date">${fechaLabel}</div><div class="cal-detail-turno">🌴 Vacaciones</div>`;
+    } else if (turno.toLowerCase().includes("compensatorio")) {
+      detail.innerHTML = `<div class="cal-detail-date">${fechaLabel}</div><div class="cal-detail-turno">🔄 Compensatorio</div>`;
+    } else {
+      detail.innerHTML = `<div class="cal-detail-date">${fechaLabel}</div><div class="cal-detail-turno">🎬 ${turno}</div>`;
+    }
+  }
+
+  async function loadHorarios(operador, mes) {
+    document.getElementById("cal-loading").style.display = "block";
+    document.getElementById("cal-container").style.display = "none";
+
+    try {
+      const url = `${SCRIPT_URL}?operador=${encodeURIComponent(operador)}&mes=${encodeURIComponent(mes)}`;
+      const res = await fetch(url);
+      const data = await res.json();
+
+      if (data.error) {
+        document.getElementById("cal-loading").textContent = "No se encontraron datos para este operador.";
+        return;
+      }
+
+      calData = data;
+      selectedDay = null;
+      document.getElementById("cal-loading").style.display = "none";
+      document.getElementById("cal-container").style.display = "block";
+      document.getElementById("cal-detail").innerHTML = '<div class="cal-detail-empty">Tocá una fecha para ver tu turno</div>';
+      renderCalendar();
+
+    } catch(err) {
+      document.getElementById("cal-loading").textContent = "Error al cargar los horarios. Intentá de nuevo.";
+    }
+  }
+
+  document.getElementById("cal-operador").addEventListener("change", function() {
+    const operador = this.value;
+    calMes = new Date().getMonth();
+    calAnio = new Date().getFullYear();
+    loadHorarios(operador, MESES_SHEET[calMes] + " " + calAnio);
+  });
+
+  document.getElementById("cal-prev").addEventListener("click", function() {
+    calMes--;
+    if (calMes < 0) { calMes = 11; calAnio--; }
+    const operador = document.getElementById("cal-operador").value;
+    if (operador) loadHorarios(operador, MESES_SHEET[calMes] + " " + calAnio);
+  });
+
+  document.getElementById("cal-next").addEventListener("click", function() {
+    calMes++;
+    if (calMes > 11) { calMes = 0; calAnio++; }
+    const operador = document.getElementById("cal-operador").value;
+    if (operador) loadHorarios(operador, MESES_SHEET[calMes] + " " + calAnio);
+  });
+
+  // FORM
   document.getElementById("submit-btn").addEventListener("click", async function() {
     const tipo    = document.getElementById("field-tipo").value;
     const nombre  = document.getElementById("field-nombre").value.trim();
