@@ -160,6 +160,7 @@
 </style>
 </head>
 <body>
+<div id="portal-content" style="display:none;">
 <div class="portal">
 
   <div class="portal-header">
@@ -284,6 +285,139 @@
       btn.style.background = "#8b2020";
       btn.disabled = false;
     }
+  });
+</script>
+
+</div>
+
+<style>
+  #auth-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #0a1931;
+    z-index: 9999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .auth-box {
+    width: 100%;
+    max-width: 340px;
+    text-align: center;
+  }
+  .auth-logo {
+    display: inline-block;
+    background: rgba(26,107,189,0.18);
+    color: #6aabf7;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(106,171,247,0.28);
+    margin-bottom: 20px;
+  }
+  .auth-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .auth-subtitle {
+    font-size: 0.85rem;
+    color: #7a92ab;
+    margin-bottom: 28px;
+  }
+  .auth-input {
+    width: 100%;
+    padding: 16px;
+    background: rgba(255,255,255,0.05);
+    color: #dce9f5;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    text-align: center;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+    -webkit-appearance: none;
+  }
+  .auth-input:focus {
+    border-color: rgba(26,107,189,0.5);
+    background: rgba(26,107,189,0.07);
+  }
+  .auth-btn {
+    width: 100%;
+    padding: 16px;
+    background: #1a6bbd;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .auth-btn:hover { background: #155fa0; }
+  .auth-error {
+    display: none;
+    margin-top: 12px;
+    color: #e05a5a;
+    font-size: 0.85rem;
+  }
+</style>
+
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">CIO Operators</div>
+    <div class="auth-title">Portal CIO</div>
+    <div class="auth-subtitle">Ingresá la contraseña del equipo para continuar</div>
+    <input class="auth-input" id="auth-input" type="password" placeholder="••••••••">
+    <button class="auth-btn" id="auth-btn">Ingresar</button>
+    <div class="auth-error" id="auth-error">Contraseña incorrecta. Intentá de nuevo.</div>
+  </div>
+</div>
+
+
+<script>
+  // PASSWORD PROTECTION
+  const PASSWORD = "teamcio";
+  const STORAGE_KEY = "cio_auth";
+
+  function checkAuth() {
+    if (localStorage.getItem(STORAGE_KEY) === "true") {
+      document.getElementById("auth-screen").style.display = "none";
+      document.getElementById("portal-content").style.display = "block";
+      return;
+    }
+    document.getElementById("auth-screen").style.display = "flex";
+    document.getElementById("portal-content").style.display = "none";
+  }
+
+  function submitPassword() {
+    const input = document.getElementById("auth-input").value;
+    const error = document.getElementById("auth-error");
+    if (input === PASSWORD) {
+      localStorage.setItem(STORAGE_KEY, "true");
+      document.getElementById("auth-screen").style.display = "none";
+      document.getElementById("portal-content").style.display = "block";
+    } else {
+      error.style.display = "block";
+      document.getElementById("auth-input").value = "";
+      document.getElementById("auth-input").focus();
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    checkAuth();
+    document.getElementById("auth-input").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") submitPassword();
+    });
+    document.getElementById("auth-btn").addEventListener("click", submitPassword);
   });
 </script>
 
