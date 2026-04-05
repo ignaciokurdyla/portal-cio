@@ -93,6 +93,7 @@
 
   .divider { margin: 8px 16px 0; border: none; border-top: 1px solid rgba(255,255,255,0.06); }
 
+  /* FORM */
   .form-wrap { padding: 20px 16px 8px; }
   .field-label {
     display: block;
@@ -157,9 +158,73 @@
     border-radius: 10px; font-size: 0.9rem; color: #4ecf8a; line-height: 1.5; text-align: center;
     display: none;
   }
+
+  /* AUTH */
+  #auth-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #0a1931;
+    z-index: 9999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .auth-box { width: 100%; max-width: 340px; text-align: center; }
+  .auth-logo {
+    display: inline-block;
+    background: rgba(26,107,189,0.18);
+    color: #6aabf7;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(106,171,247,0.28);
+    margin-bottom: 20px;
+  }
+  .auth-title { font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .auth-subtitle { font-size: 0.85rem; color: #7a92ab; margin-bottom: 28px; }
+  .auth-input {
+    width: 100%;
+    padding: 16px;
+    background: rgba(255,255,255,0.05);
+    color: #dce9f5;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    text-align: center;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+    -webkit-appearance: none;
+  }
+  .auth-input:focus { border-color: rgba(26,107,189,0.5); background: rgba(26,107,189,0.07); }
+  .auth-btn {
+    width: 100%; padding: 16px; background: #1a6bbd; color: #fff;
+    border: none; border-radius: 12px; font-size: 1rem; font-weight: 600;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .auth-btn:hover { background: #155fa0; }
+  .auth-error { display: none; margin-top: 12px; color: #e05a5a; font-size: 0.85rem; }
 </style>
 </head>
 <body>
+
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">CIO Operators</div>
+    <div class="auth-title">Portal CIO</div>
+    <div class="auth-subtitle">Ingresá la contraseña del equipo para continuar</div>
+    <input class="auth-input" id="auth-input" type="password" placeholder="••••••••">
+    <button class="auth-btn" id="auth-btn">Ingresar</button>
+    <div class="auth-error" id="auth-error">Contraseña incorrecta. Intentá de nuevo.</div>
+  </div>
+</div>
+
 <div id="portal-content" style="display:none;">
 <div class="portal">
 
@@ -169,6 +234,7 @@
     <p>Acceso rápido a tus herramientas de trabajo</p>
   </div>
 
+  <!-- SHEETS -->
   <div class="section">
     <div class="section-label">Hojas de Cálculo</div>
     <a class="link-btn" href="https://docs.google.com/spreadsheets/d/1136e7fCuvsTUF3f9HDwz-QIOVM71cyebwOX0A0pbWCo/edit?usp=sharing" target="_blank">
@@ -196,19 +262,21 @@
 
   <hr class="divider">
 
+  <!-- SOLICITUDES -->
   <div class="form-wrap">
     <div class="section-label">Solicitudes</div>
-
     <label class="field-label">Tipo de solicitud <span class="field-required">*</span></label>
     <select id="field-tipo">
       <option value="" disabled selected>Seleccioná el tipo de solicitud</option>
       <option value="Cambio de horario">Cambio de horario</option>
       <option value="Cambio de franco">Cambio de franco</option>
       <option value="Cambio por combi">Cambio por combi</option>
+      <option value="Cambio de home">Cambio de home</option>
       <option value="Cambio de availability">Cambio de availability</option>
       <option value="Pedir una licencia">Pedir una licencia</option>
       <option value="Pedir franco compensatorio">Pedir franco compensatorio</option>
       <option value="Pedir vacaciones">Pedir vacaciones</option>
+      <option value="Otros">Otros</option>
     </select>
 
     <div class="field-row" style="margin-top: 14px;">
@@ -226,165 +294,17 @@
     <textarea id="field-detalle" placeholder="Describí tu pedido con el mayor detalle posible: fechas, motivo, etc."></textarea>
 
     <button id="submit-btn" class="submit-btn">Enviar solicitud</button>
-
-    <div class="info-note">
-      Tu solicitud quedará registrada automáticamente en la hoja de solicitudes.
-    </div>
-    <div class="success-note" id="success-msg">
-      ✓ Solicitud enviada correctamente.
-    </div>
+    <div class="info-note">Tu solicitud quedará registrada automáticamente en la hoja de solicitudes.</div>
+    <div class="success-note" id="success-msg">✓ Solicitud enviada correctamente.</div>
   </div>
 
+</div>
 </div>
 
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8dBwnWtmAgzAfSqel44q4e5aUSnRP_V1mBBtp22lFzXHSSlAoytZQABDKgYHiLs8/exec";
 
-  document.getElementById("submit-btn").addEventListener("click", async function() {
-    const tipo    = document.getElementById("field-tipo").value;
-    const nombre  = document.getElementById("field-nombre").value.trim();
-    const fecha   = document.getElementById("field-fecha").value;
-    const detalle = document.getElementById("field-detalle").value.trim();
-
-    if (!tipo || !nombre || !fecha || !detalle) {
-      alert("Por favor completá todos los campos antes de enviar.");
-      return;
-    }
-
-    const btn = document.getElementById("submit-btn");
-    btn.textContent = "Enviando...";
-    btn.disabled = true;
-
-    try {
-      await fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tipo, nombre, fecha, detalle })
-      });
-
-      document.getElementById("field-tipo").value = "";
-      document.getElementById("field-nombre").value = "";
-      document.getElementById("field-fecha").value = "";
-      document.getElementById("field-detalle").value = "";
-
-      btn.textContent = "Enviar solicitud";
-      btn.disabled = false;
-      btn.style.background = "#1a7a4a";
-
-      const msg = document.getElementById("success-msg");
-      msg.style.display = "block";
-
-      setTimeout(() => {
-        btn.style.background = "#1a6bbd";
-        msg.style.display = "none";
-      }, 4000);
-
-    } catch(err) {
-      btn.textContent = "Error al enviar. Intentá de nuevo.";
-      btn.style.background = "#8b2020";
-      btn.disabled = false;
-    }
-  });
-</script>
-
-</div>
-
-<style>
-  #auth-screen {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: #0a1931;
-    z-index: 9999;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
-  .auth-box {
-    width: 100%;
-    max-width: 340px;
-    text-align: center;
-  }
-  .auth-logo {
-    display: inline-block;
-    background: rgba(26,107,189,0.18);
-    color: #6aabf7;
-    font-size: 0.62rem;
-    font-weight: 700;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    padding: 5px 14px;
-    border-radius: 20px;
-    border: 1px solid rgba(106,171,247,0.28);
-    margin-bottom: 20px;
-  }
-  .auth-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 8px;
-  }
-  .auth-subtitle {
-    font-size: 0.85rem;
-    color: #7a92ab;
-    margin-bottom: 28px;
-  }
-  .auth-input {
-    width: 100%;
-    padding: 16px;
-    background: rgba(255,255,255,0.05);
-    color: #dce9f5;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    font-size: 1rem;
-    font-family: inherit;
-    outline: none;
-    text-align: center;
-    letter-spacing: 3px;
-    margin-bottom: 12px;
-    -webkit-appearance: none;
-  }
-  .auth-input:focus {
-    border-color: rgba(26,107,189,0.5);
-    background: rgba(26,107,189,0.07);
-  }
-  .auth-btn {
-    width: 100%;
-    padding: 16px;
-    background: #1a6bbd;
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  .auth-btn:hover { background: #155fa0; }
-  .auth-error {
-    display: none;
-    margin-top: 12px;
-    color: #e05a5a;
-    font-size: 0.85rem;
-  }
-</style>
-
-<div id="auth-screen">
-  <div class="auth-box">
-    <div class="auth-logo">CIO Operators</div>
-    <div class="auth-title">Portal CIO</div>
-    <div class="auth-subtitle">Ingresá la contraseña del equipo para continuar</div>
-    <input class="auth-input" id="auth-input" type="password" placeholder="••••••••">
-    <button class="auth-btn" id="auth-btn">Ingresar</button>
-    <div class="auth-error" id="auth-error">Contraseña incorrecta. Intentá de nuevo.</div>
-  </div>
-</div>
-
-
-<script>
-  // PASSWORD PROTECTION
+  // AUTH
   const PASSWORD = "teamcio";
   const STORAGE_KEY = "cio_auth";
 
@@ -392,10 +312,10 @@
     if (localStorage.getItem(STORAGE_KEY) === "true") {
       document.getElementById("auth-screen").style.display = "none";
       document.getElementById("portal-content").style.display = "block";
-      return;
+    } else {
+      document.getElementById("auth-screen").style.display = "flex";
+      document.getElementById("portal-content").style.display = "none";
     }
-    document.getElementById("auth-screen").style.display = "flex";
-    document.getElementById("portal-content").style.display = "none";
   }
 
   function submitPassword() {
@@ -412,12 +332,50 @@
     }
   }
 
-  document.addEventListener("DOMContentLoaded", function() {
-    checkAuth();
-    document.getElementById("auth-input").addEventListener("keydown", function(e) {
-      if (e.key === "Enter") submitPassword();
-    });
-    document.getElementById("auth-btn").addEventListener("click", submitPassword);
+  document.getElementById("auth-input").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") submitPassword();
+  });
+  document.getElementById("auth-btn").addEventListener("click", submitPassword);
+  checkAuth();
+
+  // FORM
+  document.getElementById("submit-btn").addEventListener("click", async function() {
+    const tipo    = document.getElementById("field-tipo").value;
+    const nombre  = document.getElementById("field-nombre").value.trim();
+    const fecha   = document.getElementById("field-fecha").value;
+    const detalle = document.getElementById("field-detalle").value.trim();
+    if (!tipo || !nombre || !fecha || !detalle) {
+      alert("Por favor completá todos los campos antes de enviar.");
+      return;
+    }
+    const btn = document.getElementById("submit-btn");
+    btn.textContent = "Enviando...";
+    btn.disabled = true;
+    try {
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tipo, nombre, fecha, detalle })
+      });
+      document.getElementById("field-tipo").value = "";
+      document.getElementById("field-nombre").value = "";
+      document.getElementById("field-fecha").value = "";
+      document.getElementById("field-detalle").value = "";
+      btn.textContent = "Enviar solicitud";
+      btn.disabled = false;
+      btn.style.background = "#1a7a4a";
+      const msg = document.getElementById("success-msg");
+      msg.style.display = "block";
+      setTimeout(() => {
+        btn.style.background = "#1a6bbd";
+        msg.style.display = "none";
+      }, 4000);
+    } catch(err) {
+      btn.textContent = "Error al enviar. Intentá de nuevo.";
+      btn.style.background = "#8b2020";
+      btn.disabled = false;
+    }
   });
 </script>
 
